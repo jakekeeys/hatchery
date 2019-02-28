@@ -18,6 +18,8 @@ func main() {
 		logrus.Panic(err)
 	}
 
+	logrus.SetLevel(logrus.DebugLevel)
+
 	sensor := sensor.New()
 	defer sensor.Stop()
 	sensor.Start()

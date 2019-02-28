@@ -10,6 +10,12 @@ import (
 	"time"
 )
 
+const (
+	sensorPollIntervalSeconds = 1
+	sensorDataPin             = 4
+	sensorRetryLimit          = 10
+)
+
 type Sensor struct {
 	ctx        context.Context
 	mtx        *sync.Mutex
@@ -42,7 +48,7 @@ func (s Sensor) Start() {
 	go func() {
 		for {
 			select {
-			case <-time.After(time.Second * 5):
+			case <-time.After(time.Second * sensorPollIntervalSeconds):
 				err := s.update()
 				if err != nil {
 					logrus.Warn(err)
@@ -70,7 +76,7 @@ func (s Sensor) GetTemperatureAndHumidity() (float32, float32) {
 }
 
 func (s Sensor) update() error {
-	t, h, _, err := dht.ReadDHTxxWithContextAndRetry(s.ctx, dht.DHT22, 4, false, 10)
+	t, h, _, err := dht.ReadDHTxxWithContextAndRetry(s.ctx, dht.DHT22, sensorDataPin, false, sensorRetryLimit)
 	if err != nil {
 		return err
 	}

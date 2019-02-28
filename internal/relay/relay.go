@@ -8,10 +8,16 @@ import (
 	"sync"
 )
 
+const (
+	relaySwitchPin = 3
+	relayOnState   = 1
+	relayOffState  = 0
+)
+
 type Relay struct {
-	pin *rpio.Pin
-	mtx *sync.Mutex
-	on *bool
+	pin        *rpio.Pin
+	mtx        *sync.Mutex
+	on         *bool
 	relayGauge prometheus.Gauge
 }
 
@@ -25,15 +31,15 @@ func New() *Relay {
 		logrus.Panic(err)
 	}
 
-	pin := rpio.Pin(3)
+	pin := rpio.Pin(relaySwitchPin)
 	pin.Output()
 	pin.High()
 	b := false
 
 	return &Relay{
-		pin: &pin,
-		mtx: &sync.Mutex{},
-		on: &b,
+		pin:        &pin,
+		mtx:        &sync.Mutex{},
+		on:         &b,
 		relayGauge: relayGauge,
 	}
 }
@@ -54,7 +60,7 @@ func (r Relay) SetOn() {
 	*r.on = b
 	r.mtx.Unlock()
 
-	r.relayGauge.Set(float64(1))
+	r.relayGauge.Set(relayOnState)
 }
 
 func (r Relay) SetOff() {
@@ -65,7 +71,7 @@ func (r Relay) SetOff() {
 	*r.on = b
 	r.mtx.Unlock()
 
-	r.relayGauge.Set(float64(0))
+	r.relayGauge.Set(relayOffState)
 }
 
 func (r Relay) IsOn() bool {

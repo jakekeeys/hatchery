@@ -59,7 +59,7 @@ func (s Server) Stop() {
 type stateResponse struct {
 	Temperature float32
 	Humidity    float32
-	RelayOn		bool
+	RelayOn     bool
 }
 
 func (s Server) stateHandler(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +69,7 @@ func (s Server) stateHandler(w http.ResponseWriter, r *http.Request) {
 	resp := stateResponse{
 		Temperature: t,
 		Humidity:    h,
-		RelayOn: on,
+		RelayOn:     on,
 	}
 
 	bytes, err := json.Marshal(resp)
